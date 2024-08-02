@@ -3,13 +3,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { randomUUID } from 'crypto';
+import { UserRepository } from './user-repository';
 
 @Injectable()
 export class UserService {
-  public users: User[];
-  constructor() {
-    this.users = [];
-  }
+  constructor(private readonly userRepository: UserRepository) {}
 
   private convertToUser(createUser: CreateUserDto): User {
     const user = new User();
@@ -28,17 +26,15 @@ export class UserService {
     const user = this.convertToUser(createUser);
     user.id = randomUUID();
 
-    this.users.push(user);
-
-    return user;
+    return this.userRepository.create(user);
   }
 
   public findAll() {
-    return this.users;
+    return this.userRepository.findAll();
   }
 
   public findOne(id: string) {
-    const user = this.users.find((user) => user.id === id);
+    const user = this.userRepository.findOne(id);
 
     if (!user) throw new NotFoundException();
 
@@ -46,19 +42,16 @@ export class UserService {
   }
 
   public update(id: string, updateUser: UpdateUserDto) {
-    const user = this.findOne(id);
+    this.findOne(id);
 
-    if (updateUser.firstName) user.firstName = updateUser.firstName;
-    if (updateUser.lastName) user.lastName = updateUser.lastName;
+    const user = this.userRepository.update(id, updateUser);
 
     return user;
   }
 
   public remove(id: string) {
-    const index = this.users.findIndex((user) => user.id === id);
+    this.findOne(id);
 
-    if (index < 0) throw new NotFoundException();
-
-    this.users.splice(index, 1);
+    this.userRepository.remove(id);
   }
 }
