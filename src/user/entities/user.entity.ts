@@ -1,12 +1,32 @@
+import { Column, Entity, OneToMany, Unique } from 'typeorm';
 import { UserInterface } from '../interfaces';
+import { CommonEntity } from 'src/common/entities/common.entity';
 
-export class User implements UserInterface {
-  id: string;
+@Entity()
+@Unique(['username'])
+@Unique(['email'])
+export class User extends CommonEntity implements UserInterface {
+  @Column({ type: 'citext', nullable: false })
   username: string;
+
+  @Column({ type: 'text', nullable: false })
   password: string;
+
+  @Column({ type: 'text', nullable: true, default: null })
   salt: string;
+
+  @Column({ type: 'citext', nullable: true })
   firstName: string;
+
+  @Column({ type: 'citext', nullable: true })
   lastName: string;
+
+  @Column({ type: 'citext' })
   email: string;
-  active: boolean;
+
+  @Column({ default: true, nullable: false })
+  active!: boolean;
+
+  // @OneToMany(() => UserRole, (userRole) => userRole.user)
+  // userRoles?: UserRole[];
 }

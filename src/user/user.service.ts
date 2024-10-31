@@ -2,56 +2,53 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { randomUUID } from 'crypto';
-import { UserRepository } from './user-repository';
+
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+  ) {}
 
-  private convertToUser(createUser: CreateUserDto): User {
-    const user = new User();
+  public async create(createUser: CreateUserDto): Promise<CreateUserDto> {
+    const user = this.userRepository.create(createUser);
+    const dbUser = await this.userRepository.save(user);
 
-    user.username = createUser.username;
-    user.password = createUser.password;
-    user.firstName = createUser.firstName;
-    user.lastName = createUser.lastName;
-    user.email = createUser.email;
-    user.active = true;
-
-    return user;
+    return plainToInstance(CreateUserDto, dbUser);
   }
 
-  public create(createUser: CreateUserDto) {
-    const user = this.convertToUser(createUser);
-    user.id = randomUUID();
+  public async findAll(): Promise<CreateUserDto[]> {
+    const users = await this.userRepository.find();
 
-    return this.userRepository.create(user);
+    return plainToInstance(CreateUserDto, users);
   }
 
-  public findAll() {
-    return this.userRepository.findAll();
-  }
-
-  public findOne(id: string) {
-    const user = this.userRepository.findOne(id);
+  public async findById(id: string): Promise<User> {
+    const user = this.userRepository.findOneBy({ id });
 
     if (!user) throw new NotFoundException();
 
     return user;
   }
 
-  public update(id: string, updateUser: UpdateUserDto) {
-    this.findOne(id);
+  public async findOne(id: string): Promise<CreateUserDto> {
+    const user = await this.findById(id);
+    return plainToInstance(CreateUserDto, user);
+  }
+
+  public async update(id: string, updateUser: UpdateUserDto) {
+    this.findById(id);
 
     const user = this.userRepository.update(id, updateUser);
 
     return user;
   }
 
-  public remove(id: string) {
-    this.findOne(id);
-
-    this.userRepository.remove(id);
+  public async remove(id: string): Promise<void> {
+    const user = await this.findById(id);
+    await this.userRepository.remove(user);
   }
 }

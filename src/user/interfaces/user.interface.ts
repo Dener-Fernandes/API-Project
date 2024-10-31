@@ -1,5 +1,6 @@
-export interface UserInterface {
-  id: string;
+import { CommonEntityInterface } from 'src/common/interfaces';
+
+export interface UserInterface extends CommonEntityInterface {
   email: string;
   firstName: string;
   lastName: string;
