@@ -11,7 +11,7 @@ import { UserRoleService } from './user-role.service';
 import { CreateUserRoleDto } from './dto/create-user-role.dto';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('user-role')
+@ApiTags('User-role')
 @Controller('user-role')
 export class UserRoleController {
   constructor(private readonly userRoleService: UserRoleService) {}
