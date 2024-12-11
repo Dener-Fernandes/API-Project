@@ -28,7 +28,7 @@ export const typeormConfig = registerAs(
       type: 'postgres',
       url: process.env.DATABASE_URL
         ? process.env.DATABASE_URL
-        : 'postgresql://postgres:postgres@localhost:5432/api-project',
+        : 'postgresql://postgres:postgres@localhost:5432/api_project',
       migrationsRun:
         'string' === typeof process.env.DATABASE_MIGRATIONS_RUN
           ? process.env.DATABASE_MIGRATIONS_RUN === 'true'

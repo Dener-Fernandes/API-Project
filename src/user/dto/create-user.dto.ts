@@ -8,34 +8,34 @@ export class CreateUserDto implements UserCreatableInterface {
   @Expose()
   id?: string;
 
-  @Expose()
   @ApiProperty({
     type: 'string',
   })
+  @Expose()
   @IsString()
   username!: string;
 
   @ApiProperty({
     type: 'string',
   })
+  @Expose()
   @IsString()
   password!: string;
 
-  @Expose()
   @ApiProperty({
     type: 'string',
   })
+  @Expose()
   @IsString()
   firstName!: string;
 
-  @Expose()
   @ApiProperty({
     type: 'string',
   })
+  @Expose()
   @IsString()
   lastName!: string;
 
-  @Expose()
   @ApiProperty({
     type: 'string',
   })

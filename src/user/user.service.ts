@@ -6,6 +6,7 @@ import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
+import { UserResponseDto } from 'src/common/doc/responses/user/user-response.dto';
 
 @Injectable()
 export class UserService {
@@ -13,17 +14,17 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  public async create(createUser: CreateUserDto): Promise<CreateUserDto> {
+  public async create(createUser: CreateUserDto): Promise<UserResponseDto> {
     const user = this.userRepository.create(createUser);
     const dbUser = await this.userRepository.save(user);
 
-    return plainToInstance(CreateUserDto, dbUser);
+    return plainToInstance(UserResponseDto, dbUser);
   }
 
-  public async findAll(): Promise<CreateUserDto[]> {
+  public async findAll(): Promise<UserResponseDto[]> {
     const users = await this.userRepository.find();
 
-    return plainToInstance(CreateUserDto, users);
+    return plainToInstance(UserResponseDto, users);
   }
 
   public async findById(id: string): Promise<User> {
@@ -34,17 +35,22 @@ export class UserService {
     return user;
   }
 
-  public async findOne(id: string): Promise<CreateUserDto> {
+  public async findOne(id: string): Promise<UserResponseDto> {
     const user = await this.findById(id);
-    return plainToInstance(CreateUserDto, user);
+    return plainToInstance(UserResponseDto, user);
   }
 
-  public async update(id: string, updateUser: UpdateUserDto) {
+  public async update(
+    id: string,
+    updateUser: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     this.findById(id);
 
-    const user = this.userRepository.update(id, updateUser);
+    await this.userRepository.update(id, updateUser);
 
-    return user;
+    const user = this.findById(id);
+
+    return plainToInstance(UserResponseDto, user);
   }
 
   public async remove(id: string): Promise<void> {
