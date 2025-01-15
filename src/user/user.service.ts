@@ -7,6 +7,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDto } from 'src/common/doc/responses/user/user-response.dto';
+import { UserDto } from './dto/user.dto';
+import { CryptUtil } from 'src/common/utils/crypt.util';
 
 @Injectable()
 export class UserService {
@@ -56,5 +58,25 @@ export class UserService {
   public async remove(id: string): Promise<void> {
     const user = await this.findById(id);
     await this.userRepository.remove(user);
+  }
+
+  async valideteUserPassword(
+    username: string,
+    password: string,
+  ): Promise<UserDto | null> {
+    const user = await this.userRepository.findOne({
+      where: {
+        username,
+      },
+    });
+
+    if (
+      user &&
+      (await CryptUtil.validatePassword(password, user.password, user.salt))
+    ) {
+      return plainToInstance(UserDto, user);
+    }
+
+    return null;
   }
 }
