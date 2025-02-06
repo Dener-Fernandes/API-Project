@@ -10,6 +10,7 @@ export class AuthLocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(username: string, password: string) {
+    console.log('olá');
     return await this.authService.validatUserPassword(username, password);
   }
 }

@@ -8,12 +8,13 @@ import { typeormConfig } from './config/typeorm.config';
 import { UserRoleModule } from './user-role/user-role.module';
 import { RoleModule } from './role/role.module';
 import { AuthModule } from './auth/auth.module';
+import { jwtConfig } from './config/jwt.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [typeormConfig],
+      load: [typeormConfig, jwtConfig],
     }),
     TypeOrmModule.forRootAsync({
       inject: [typeormConfig.KEY],
